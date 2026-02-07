@@ -1,26 +1,57 @@
 // src/App.jsx
-import { useContext } from 'react';
-import { Routes, Route } from 'react-router';
+import { useContext, useEffect, useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router';
 
 import NavBar from './components/NavBar/NavBar.jsx';
 import SignUpForm from './components/SignUpForm/SignUpForm.jsx';
 import SignInForm from './components/SignInForm/SignInForm.jsx';
 import Landing from './components/Landing/Landing';
 import Dashboard from './components/Dashboard/Dashboard';
+import AppList from './components/AppList/AppList.jsx';
+import * as appService from './services/appService.js';
+import AppDetails from './components/AppDetails/AppDetails.jsx';
+import AppForm from "./components/AppForm/AppForm";
 
 import { UserContext } from './contexts/UserContext';
 
 
 const App = () => {
   const { user } = useContext(UserContext);
+  const [applications, setApplications] = useState([]);
+  const navigate = useNavigate();
+
+const handleAddApp = async (appFormData) => {
+  const newApp = await appService.create(appFormData);
+  setApplications([newApp, ...applications]);
+  navigate("/applications");
+};
+  useEffect(() => {
+  const fetchAllApplications = async () => {
+    const applicationData = await appService.index();
+
+    console.log("applicationData:", applicationData);
+    setApplications(applicationData);
+  };
+  if (user) fetchAllApplications();
+}, [user]);
   
   return (
     <>
       <NavBar />
       <Routes>
          <Route path='/' element={user ? <Dashboard /> : <Landing /> } />
+          {user ? (
+          <>
+          <Route path='/applications' element={<AppList applications={applications} />} />
+          <Route path='/applications/:appId' element={<AppDetails/>} />
+          <Route path="/applications/new" element={<AppForm handleAddApp={handleAddApp} />} />
+          </>
+        ) : (
+          <>
         <Route path='/sign-up' element={<SignUpForm />} />
         <Route path="/sign-in" element={<SignInForm />} />
+        </>
+        )}
       </Routes>
     </>
   );
