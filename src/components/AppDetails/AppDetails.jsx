@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import { useState, useEffect } from 'react';
 import * as appService from '../../services/appService';
 import * as appFollowUp from '../../services/appFollowUp.js';
@@ -6,11 +6,12 @@ import * as checkInService from '../../services/checkInService';
 
 
 
-const AppDetails = () => {
+const AppDetails = (props) => {
     const { appId } = useParams();
     const [app, setApp] = useState(null);
     const [followUps, setFollowUps] = useState([]);
   const [checkIns, setCheckIns] = useState([]);
+  const [editingCheckIn, setEditingCheckIn] = useState(null);
     console.log('appId', appId);
  
 const [followUpFormData, setFollowUpFormData] = useState({
@@ -84,13 +85,47 @@ const handleAddCheckIn = async (evt) => {
     return;
   }
 
-  await checkInService.create(appId, {
-    mood: Number(checkInFormData.mood),
-    note: checkInFormData.note,
-  });
+  if (editingCheckIn) {
+    await props.handleUpdateCheckIn(appId, editingCheckIn._id, {
+      mood: Number(checkInFormData.mood),
+      note: checkInFormData.note,
+    });
+    setEditingCheckIn(null);
+  } else {
+    await checkInService.create(appId, {
+      mood: Number(checkInFormData.mood),
+      note: checkInFormData.note,
+    });
+  }
 
   setCheckInFormData({ mood: "3", note: "" });
-  fetchApp(); 
+  fetchApp();
+};
+
+const handleEditCheckIn = (checkIn) => {
+  setEditingCheckIn(checkIn);
+  setCheckInFormData({
+    mood: String(checkIn.mood),
+    note: checkIn.note || "",
+  });
+};
+
+const handleCancelEditCheckIn = () => {
+  setEditingCheckIn(null);
+  setCheckInFormData({ mood: "3", note: "" });
+};
+
+const handleDeleteCheckIn = async (checkInId) => {
+  const deleted = await props.handleDeleteCheckIn(appId, checkInId);
+  if (deleted) {
+    fetchApp();
+  }
+};
+
+const handleDeleteApp = () => {
+  if (window.confirm(`Are you sure you want to delete ${app.company}?`)) {
+    props.handleDeleteApp(appId);
+  }
 };
 
   if (!app) return <main>Loading application...</main>;
@@ -128,6 +163,12 @@ const isWorking = app.status === "working";
         <strong>Last Updated:</strong>{" "}
         {new Date(app.updatedAt).toLocaleString()}
       </p>
+
+      <Link to={`/applications/${appId}/edit`}>
+        <button>Edit</button>
+      </Link>
+      <button onClick={handleDeleteApp}>Delete</button>
+
        {!isWorking ? (
         <>
           <h2>Follow-Ups</h2>
@@ -196,7 +237,10 @@ const isWorking = app.status === "working";
               placeholder="how is work going this week?"
             />
 
-            <button type="submit">Add Check-In</button>
+            <button type="submit">{editingCheckIn ? 'UPDATE CHECK-IN' : 'Add Check-In'}</button>
+            {editingCheckIn && (
+              <button type="button" onClick={handleCancelEditCheckIn}>CANCEL</button>
+            )}
           </form>
 
         {checkIns.length === 0 ? (
@@ -214,6 +258,8 @@ const isWorking = app.status === "working";
         </p>
         <p>Mood: {checkin.mood}</p>
         <p>Note: {checkin.note}</p>
+        <button onClick={() => handleEditCheckIn(checkin)}>Edit</button>
+        <button onClick={() => handleDeleteCheckIn(checkin._id)}>Delete</button>
         <hr />
       </div>
     ))

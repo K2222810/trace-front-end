@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 import * as appService from "../../services/appService";
 
 const AppForm = (props) => {
   const navigate = useNavigate();
+  const { appId } = useParams();
 
   const [formData, setFormData] = useState({
     company: "",
@@ -15,6 +16,35 @@ const AppForm = (props) => {
     salaryRange: "",
     furtherDetails: "",
   });
+
+  useEffect(() => {
+    const fetchApp = async () => {
+      const data = await appService.show(appId);
+      const app = data.application || data;
+      setFormData({
+        company: app.company || "",
+        roleTitle: app.roleTitle || "",
+        industry: app.industry || "other",
+        status: app.status || "applied",
+        appliedDate: app.appliedDate ? app.appliedDate.split('T')[0] : "",
+        location: app.location || "",
+        salaryRange: app.salaryRange || "",
+        furtherDetails: app.furtherDetails || "",
+      });
+    };
+    if (appId) fetchApp();
+
+    return () => setFormData({
+      company: "",
+      roleTitle: "",
+      industry: "other",
+      status: "applied",
+      appliedDate: "",
+      location: "",
+      salaryRange: "",
+      furtherDetails: "",
+    });
+  }, [appId]);
 
   const handleChange = (evt) => {
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
@@ -29,16 +59,16 @@ const AppForm = (props) => {
     appliedDate: formData.appliedDate || undefined,
   };
 
-  props.handleAddApp(payload);
+  if (appId) {
+    props.handleUpdateApp(appId, payload);
+  } else {
+    props.handleAddApp(payload);
+  }
 };
 
   return (
     <main>
-      <h1>Add Application</h1>
-      <p>
-    Add a role you’re applying to so you can keep everything in one place. Fill in what you know now,
-    you can always come back later to update details, add follow-ups, or change the status.
-    </p>
+      <h1>{appId ? 'Edit Application' : 'Add Application'}</h1>
 
       <form onSubmit={handleSubmit}>
         <label htmlFor="company-input">Company</label>
@@ -129,7 +159,7 @@ const AppForm = (props) => {
           onChange={handleChange}
         />
 
-        <button type="submit">SUBMIT</button>
+        <button type="submit">{appId ? 'UPDATE' : 'SUBMIT'}</button>
       </form>
     </main>
   );

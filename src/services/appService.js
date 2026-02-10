@@ -40,8 +40,40 @@ const create = async (appData) => {
   }
 };
 
+const update = async (appId, appData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${appId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(appData),
+    });
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteApp = async (appId) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${appId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export { 
   index,
   show,
-  create
+  create,
+  update,
+  deleteApp
 };
