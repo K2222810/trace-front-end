@@ -324,8 +324,7 @@ const isWorking = app.status === "working";
             <select
               name="mood"
               id="mood-input"
-              value={checkInFormData.mood}
-              onChange={handleCheckInChange}
+              value={checkInFormData.mlshange}
             >
               <option value="1">1</option>
               <option value="2">2</option>
