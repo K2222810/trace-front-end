@@ -11,7 +11,6 @@ const AppDetails = (props) => {
     const [app, setApp] = useState(null);
     const [followUps, setFollowUps] = useState([]);
   const [checkIns, setCheckIns] = useState([]);
-  const [editingCheckIn, setEditingCheckIn] = useState(null);
   const [editingFollowUpId, setEditingFollowUpId] = useState(null);
   const [followUpEditData, setFollowUpEditData] = useState({
     dueDate: "",
@@ -132,34 +131,13 @@ const handleAddCheckIn = async (evt) => {
     return;
   }
 
-  if (editingCheckIn) {
-    await props.handleUpdateCheckIn(appId, editingCheckIn._id, {
-      mood: Number(checkInFormData.mood),
-      note: checkInFormData.note,
-    });
-    setEditingCheckIn(null);
-  } else {
-    await checkInService.create(appId, {
-      mood: Number(checkInFormData.mood),
-      note: checkInFormData.note,
-    });
-  }
+  await checkInService.create(appId, {
+    mood: Number(checkInFormData.mood),
+    note: checkInFormData.note,
+  });
 
   setCheckInFormData({ mood: "3", note: "" });
   fetchApp();
-};
-
-const handleEditCheckIn = (checkIn) => {
-  setEditingCheckIn(checkIn);
-  setCheckInFormData({
-    mood: String(checkIn.mood),
-    note: checkIn.note || "",
-  });
-};
-
-const handleCancelEditCheckIn = () => {
-  setEditingCheckIn(null);
-  setCheckInFormData({ mood: "3", note: "" });
 };
 
 const handleDeleteCheckIn = async (checkInId) => {
@@ -180,6 +158,16 @@ const handleDeleteApp = async () => {
   }
 };
 
+const visibleFollowUps = followUps.filter((followUp) => !followUp.isDone);
+
+const handleComplete = async (followUp) => {
+  setFollowUps((prev) => prev.filter((f) => f._id !== followUp._id));
+  await props.handleUpdateFollowUp(appId, followUp._id, {
+    isDone: true,
+  });
+  fetchApp();
+};
+
 
 //fix
   if (!app) return <main>Loading application...</main>;
@@ -197,9 +185,7 @@ const isWorking = app.status === "working";
 
       <p>
         <strong>Applied Date:</strong>{" "}
-        {app.appliedDate
-          ? new Date(app.appliedDate).toLocaleDateString()
-          : "Not set"}
+        {app.appliedDate ? formatDate(app.appliedDate) : "Not set"}
       </p>
 
       <p><strong>Location:</strong> {app.location || "Not set"}</p>
@@ -210,12 +196,12 @@ const isWorking = app.status === "working";
 
       <p>
         <strong>Created:</strong>{" "}
-        {new Date(app.createdAt).toLocaleString()}
+        {formatDate(app.createdAt)}
       </p>
 
       <p>
         <strong>Last Updated:</strong>{" "}
-        {new Date(app.updatedAt).toLocaleString()}
+        {formatDate(app.updatedAt)}
       </p>
 
       <Link to={`/applications/${appId}/edit`}>
@@ -247,12 +233,13 @@ const isWorking = app.status === "working";
 
             <button type="submit">Add Follow-Up</button>
           </form>
-          {followUps.length === 0 ? (
+          {visibleFollowUps.length === 0 ? (
             <p>No follow-ups yet.</p>
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid #333" }}>
+                  <th style={{ padding: "10px", textAlign: "center" }}></th>
                   <th style={{ padding: "10px", textAlign: "left" }}>Due Date</th>
                   <th style={{ padding: "10px", textAlign: "left" }}>Note</th>
                   <th style={{ padding: "10px", textAlign: "left" }}>Status</th>
@@ -260,8 +247,15 @@ const isWorking = app.status === "working";
                 </tr>
               </thead>
               <tbody>
-                {followUps.map((followup) => (
+                {visibleFollowUps.map((followup) => (
                   <tr key={followup._id} style={{ borderBottom: "1px solid #ddd" }}>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      <input
+                        type="checkbox"
+                        onChange={() => handleComplete(followup)}
+                        disabled={editingFollowUpId === followup._id}
+                      />
+                    </td>
                     <td style={{ padding: "10px" }}>
                       {editingFollowUpId === followup._id ? (
                         <input
@@ -324,7 +318,8 @@ const isWorking = app.status === "working";
             <select
               name="mood"
               id="mood-input"
-              value={checkInFormData.mlshange}
+              value={checkInFormData.mood}
+              onChange={handleCheckInChange}
             >
               <option value="1">1</option>
               <option value="2">2</option>
@@ -342,32 +337,40 @@ const isWorking = app.status === "working";
               placeholder="how is work going this week?"
             />
 
-            <button type="submit">{editingCheckIn ? 'UPDATE CHECK-IN' : 'Add Check-In'}</button>
-            {editingCheckIn && (
-              <button type="button" onClick={handleCancelEditCheckIn}>CANCEL</button>
-            )}
+            <button type="submit">Add Check-In</button>
           </form>
 
         {checkIns.length === 0 ? (
-         <p>No check-ins yet.Add your first check-in.</p>
+         <p>No check-ins yet. Add your first check-in.</p>
     ) : (
-        checkIns.map((checkin) => (
-      <div key={checkin._id}>
-        <p>
-          Date:{" "}
-          {checkin.date
-            ? new Date(checkin.date).toLocaleDateString()
-            : checkin.createdAt
-            ? new Date(checkin.createdAt).toLocaleDateString()
-            : ""}
-        </p>
-        <p>Mood: {checkin.mood}</p>
-        <p>Note: {checkin.note}</p>
-        <button onClick={() => handleEditCheckIn(checkin)}>Edit</button>
-        <button onClick={() => handleDeleteCheckIn(checkin._id)}>Delete</button>
-        <hr />
-      </div>
-    ))
+        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
+          <thead>
+            <tr style={{ borderBottom: "2px solid #333" }}>
+              <th style={{ padding: "10px", textAlign: "left" }}>Date</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Mood</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Note</th>
+              <th style={{ padding: "10px", textAlign: "left" }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {checkIns.map((checkin) => (
+              <tr key={checkin._id} style={{ borderBottom: "1px solid #ddd" }}>
+                <td style={{ padding: "10px" }}>
+                  {checkin.date
+                    ? formatDate(checkin.date)
+                    : checkin.createdAt
+                    ? formatDate(checkin.createdAt)
+                    : "—"}
+                </td>
+                <td style={{ padding: "10px" }}>{checkin.mood}</td>
+                <td style={{ padding: "10px" }}>{checkin.note || "—"}</td>
+                <td style={{ padding: "10px" }}>
+                  <button type="button" onClick={() => handleDeleteCheckIn(checkin._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
   )}
   </>
  )}
