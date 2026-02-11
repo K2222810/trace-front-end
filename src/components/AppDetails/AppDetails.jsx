@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import * as appService from '../../services/appService';
 import * as appFollowUp from '../../services/appFollowUp.js';
 import * as checkInService from '../../services/checkInService';
+import Loading from '../Loading/Loading';
 
 
 
@@ -170,8 +171,7 @@ const handleComplete = async (followUp) => {
 
 
 //fix
-  if (!app) return <main>Loading application...</main>;
-
+if (!app) return <Loading />
 
 const isWorking = app.status === "working";
 
