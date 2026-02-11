@@ -5,6 +5,7 @@ import * as appFollowUp from '../../services/appFollowUp.js';
 import * as checkInService from '../../services/checkInService';
 import styles from "./AppDetails.module.css";
 import { Briefcase, Pencil, Trash2, Save, X } from "lucide-react";
+import Loading from '../Loading/Loading';
 
 
 
@@ -190,6 +191,8 @@ const moodEmoji = (mood) => {
 
   if (!app) return <main>Loading application...</main>;
 
+//fix
+if (!app) return <Loading />
 
 const isWorking = app.status === "working";
 
