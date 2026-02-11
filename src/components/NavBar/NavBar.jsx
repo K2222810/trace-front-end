@@ -1,60 +1,76 @@
-import { useContext, useState } from 'react';
-import { Link } from "react-router";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { LayoutList, CheckSquare, LogOut, X, Menu } from "lucide-react";
 
-import { UserContext } from '../../contexts/UserContext';
-import styles from './NavBar.module.css';
-import Logo from '../../assets/images/logo-h.svg';
+import { UserContext } from "../../contexts/UserContext";
+import styles from "./NavBar.module.css";
+import Logo from "../../assets/images/logo-h.svg";
 
 const NavBar = () => {
   const { user, setUser } = useContext(UserContext);
   const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
 
   const handleSignOut = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
+    navigate("/");
   };
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const menuItems = [
-    { icon: '📋', label: 'Applications', path: '/applications' },
-    { icon: '✅', label: 'Follow Ups', path: '/follow-ups' },
-  ];
 
   return (
     <>
-      <button className={styles.toggleButton} onClick={toggleSidebar}>
-        {isOpen ? '✕' : '☰'}
+      <button
+        type="button"
+        className={styles.toggleButton}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle navigation"
+      >{isOpen ? (
+    <X className={styles.toggleIcon} />
+  ) : (
+    <div className={styles.toggleClosedContent}>
+      <Menu className={styles.toggleIcon} />
+       <span className={styles.toggleDivider} />
+      <img src={Logo} alt="Logo" className={styles.toggleLogo} />
+    </div>
+  )}
       </button>
-      <nav className={`${styles.container} ${isOpen ? styles.open : styles.closed}`}>
-        <div className={styles.header}>
-          <Link to='/' className={styles.logoLink}><img src={Logo} alt='Logo' className={styles.logo} /></Link>
-        </div>
 
-        <div className={styles.menuSection}>
-          {menuItems.map((item) => (
-            <Link key={item.label} to={item.path} className={styles.menuItem}>
-              <span className={styles.icon}>{item.icon}</span>
-              <span className={styles.label}>{item.label}</span>
-            </Link>
-          ))}
-          {user && (
-            <button className={styles.menuItem} onClick={handleSignOut}>
-              <span className={styles.icon}>🚪</span>
-              <span className={styles.label}>Sign Out</span>
-            </button>
-          )}
-        </div>
+        <nav className={`${styles.sidebar} ${isOpen ? styles.open : styles.closed}`}>
+  <div className={styles.topSpace} />
 
-        {!user && (
-          <div className={styles.authSection}>
-            <Link to="/sign-in" className={styles.authLink}>Sign In</Link>
-            <Link to='/sign-up' className={styles.authLink}>Sign Up</Link>
-          </div>
+  <Link to="/" className={styles.logoLink}>
+    <img src={Logo} alt="Logo" className={styles.logo} />
+  </Link>
+
+  {isOpen && (
+    <>
+      <div className={styles.separator} />
+
+      <div className={styles.menu}>
+        <Link to="/applications" className={styles.item}>
+          <LayoutList className={styles.icon} />
+          <span className={styles.label}>Applications</span>
+        </Link>
+
+        <Link to="/follow-ups" className={styles.item}>
+          <CheckSquare className={styles.icon} />
+          <span className={styles.label}>Follow Ups</span>
+        </Link>
+
+        {user && (
+          <button
+            type="button"
+            className={`${styles.item} ${styles.signOut}`}
+            onClick={handleSignOut}
+          >
+            <LogOut className={styles.icon} />
+            <span className={styles.label}>Sign Out</span>
+          </button>
         )}
-      </nav>
+      </div>
+    </>
+  )}
+</nav>
     </>
   );
 };

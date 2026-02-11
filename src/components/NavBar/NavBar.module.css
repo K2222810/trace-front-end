@@ -1,158 +1,172 @@
-/* src/components/NavBar/NavBar.module.css */
-
-.container {
+.sidebar {
+  position: fixed;
   left: 0;
   top: 0;
-  z-index: 900;
-  width: 250px;
   height: 100vh;
+  width: 240px;
+  padding: 18px 16px;
   display: flex;
-  position: fixed;
   flex-direction: column;
-  padding: 10px 0;
-  background: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(8px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  border-right: 1px solid var(--border);
+  z-index: 900;
 }
 
-.container.closed {
+.open {
+  display: flex;
+ 
+}
+
+.closed {
   display: none;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px 20px;
+.topSpace {
+  height: 56px;
 }
 
 .logoLink {
   display: flex;
+  align-items: center;
   justify-content: center;
-  text-decoration: none;
 }
 
 .logo {
-  width: 60px;
+  width: 140px;
   height: auto;
 }
 
-.menuSection {
+.separator {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+.menu {
   display: flex;
   flex-direction: column;
-  padding: 10px 0;
 }
 
-.menuItem {
+.item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 12px 20px;
+  gap: 12px;
+  padding: 12px 4px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.9);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  background: none;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+
+  background: transparent;
+  border: 0;
   box-shadow: none;
+
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  border-bottom: 1px solid var(--border);
 }
 
-
-.menuItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+.item:hover {
+  color: var(--text);
 }
 
 .icon {
-  font-size: 20px;
-  width: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: currentColor;
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 500;
   white-space: nowrap;
 }
 
-.footer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 15px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.signOut {
   margin-top: auto;
-  display: none;
+  border-bottom: 0;
 }
 
-.authSection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  margin-top: auto;
-}
-
-.authLink {
-  padding: 10px 16px;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.authLink:hover {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: white;
+.signOut,
+.signOut:hover,
+.signOut:active,
+.signOut:focus {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .toggleButton {
   position: fixed;
-  left: 10px;
-  top: 10px;
+  top: 14px;
+  left: 14px;
   z-index: 1000;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
+
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
+
+  cursor: pointer;
+  color: var(--text);
+
+  padding: 0 12px;
+  width: auto;
+  max-width: calc(100vw - 28px);
+  overflow: hidden;
 }
 
 .toggleButton:hover {
-  background-color: rgba(0, 0, 0, 0.4);
-  color: white;
+  background: rgba(255, 255, 255, 0.5);
 }
 
-@media only screen and (max-width: 414px) {
-  .container {
-    width: 200px;
+.toggleClosedContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  min-width: 0;
+}
+.toggleDivider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.toggleIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.toggleLogo {
+  height: 18px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+
+  flex-shrink: 1;
+  min-width: 0;
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    width: 210px;
   }
 
-  .label {
-    font-size: 13px;
+  .logo {
+    width: 130px;
+  }
+
+  .item {
+    font-size: 15px;
   }
 }
