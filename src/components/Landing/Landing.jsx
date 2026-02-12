@@ -68,7 +68,11 @@ const Landing = () => {
                 Once you start working, log quick notes to reflect and improve over time.
               </p>
             </div>
-        <section className={styles.about}>
+          </article>
+        </div>
+      </section>
+
+      <section className={styles.about}>
           <header>
             <h3>HOW IT WORKS</h3>
             <h1>FEATURES</h1>
@@ -90,7 +94,6 @@ const Landing = () => {
               Use them to note how the role is going and reflect on what's working.</p>
             </div>
           </article>
-        </div>
       </section>
 
       <footer className={styles.footer}>
