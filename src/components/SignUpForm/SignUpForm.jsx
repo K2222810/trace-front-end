@@ -50,9 +50,18 @@ const SignUpForm = () => {
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        <div className={styles.brand}>
-          <img src={LogoV} alt="Trace logo" className={styles.logo} />
-        </div>
+        <aside className={styles.brand}>
+          <div className={styles.brandStack}>
+            <img src={LogoV} alt="Trace" className={styles.logo} />
+        
+            <h1 className={styles.headline}>Your job search, organized.</h1>
+        
+            {/* <p className={styles.lead}>
+              Save every application, stay on top of follow-ups, and log check-ins
+              once you’re working so you always know what to do next.
+            </p> */}
+          </div>
+        </aside>
 
         <section className={styles.card}>
           <h1 className={styles.title}>Create an account</h1>

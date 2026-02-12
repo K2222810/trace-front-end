@@ -8,24 +8,47 @@
 .shell {
   width: min(980px, calc(100% - 32px));
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
+  grid-template-columns: 420px minmax(0, 520px); 
+  gap: 14px;
   align-items: center;
 }
 
 .brand {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  justify-items: start;
+}
+
+.brandStack {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 520px;
-  background: transparent;
+  flex-direction: column;
+  align-items: flex-start; 
+  gap: 12px;
+  max-width: 420px;
 }
 
 .logo {
-  width: 320px;
-  max-width: 85%;
+  width: 280px;
+  max-width: 100%;
   height: auto;
   display: block;
+}
+
+.headline {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--text-muted);
+}
+
+.lead {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.65;
+ max-width: 400px;
 }
 
 .card {
@@ -104,10 +127,20 @@
   }
 
   .brand {
-    min-height: 180px;
+    justify-items: center; 
+    min-height: auto;
+    padding: 12px 0;
+  }
+
+  .brandStack {
+    align-items: center;
+    text-align: center;
   }
 
   .logo {
     width: 240px;
   }
+  .headline {
+    font-size: 28px;         
+}
 }
