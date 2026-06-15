@@ -14,6 +14,7 @@ TRACE was built to address a real problem, experienced during our own job search
 
 # Deployment Link
 Live App:
+https://trace-job-app.netlify.app/
 
 # Demo Login (for reviewers):
 Username: demo
